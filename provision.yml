@@ -1,0 +1,21 @@
+---
+- name: Add records to /etc/hosts
+  hosts: all
+  become: True
+  gather_facts: False
+  roles:
+    - role: change-file-hosts
+      ip: 192.168.50.5
+      dns: mailserver.otus.local
+
+- name: Setup server
+  become: True
+  hosts: mailserver
+  gather_facts: False
+  roles:
+    - role: postfix-server
+      allowed_networks: "192.168.50.0/24, 10.0.2.0/24"
+      listen_ip: "192.168.50.5, 10.0.2.15"
+    - role: dovecot
+      user: vagrant
+      password: password
